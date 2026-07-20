@@ -31,6 +31,18 @@ clientPromise = globalWithMongo._mongoClientPromise!
 const client = globalWithMongo._mongoClient
 const db = client.db(mongoDbName)
 
+// Build the trusted origins list.
+// BETTER_AUTH_TRUSTED_ORIGINS is a comma-separated list of allowed origins,
+// e.g. "https://yourapp.vercel.app,https://custom-domain.com"
+// The baseURL origin is always implicitly trusted by Better Auth, but we
+// add it explicitly here alongside any extra production origins.
+const trustedOrigins = [
+  process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS
+    ? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
+    : []),
+]
+
 export const auth = betterAuth({
   database: mongodbAdapter(db, {
     client,
@@ -38,6 +50,7 @@ export const auth = betterAuth({
   } as any),
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
+  trustedOrigins,
   emailAndPassword: {
     enabled: true,
   },
