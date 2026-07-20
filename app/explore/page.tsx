@@ -86,13 +86,9 @@ function ExploreContent() {
       }),
   })
   // Extract skills list and pagination stats safely
-  // const skills: Skill[] = data?.skills || (Array.isArray(data) ? data : [])
-  // const totalPages = data?.totalPages || 1
-  // const currentPage = data?.currentPage || page
   const skills: Skill[] = data?.items || []
   const totalPages = data?.totalPages || 1
   const currentPage = data?.page || page
-  console.log(skills.length);
 
   const handleCategoryChange = (val: string) => {
     updateQueryParams({ category: val === "All" ? "" : val, page: "1" })
