@@ -10,26 +10,26 @@ if (!mongoUri) {
 
 const mongoDbName = process.env.MONGODB_DB_NAME || "skillswap_bd"
 
-// Global caching for MongoClient to prevent connection exhaustion in serverless environments
-let client: MongoClient
-let db: any
-
+// Global caching for MongoClient to prevent connection exhaustion in serverless environments.
+// Applied to BOTH production and development to avoid new connections on every cold start.
 const globalWithMongo = global as typeof globalThis & {
   _mongoClient?: MongoClient
-  _mongoDb?: any
+  _mongoClientPromise?: Promise<MongoClient>
 }
 
-if (process.env.NODE_ENV === "production") {
-  client = new MongoClient(mongoUri)
-  db = client.db(mongoDbName)
-} else {
-  if (!globalWithMongo._mongoClient) {
-    globalWithMongo._mongoClient = new MongoClient(mongoUri)
-    globalWithMongo._mongoDb = globalWithMongo._mongoClient.db(mongoDbName)
-  }
-  client = globalWithMongo._mongoClient
-  db = globalWithMongo._mongoDb
+let clientPromise: Promise<MongoClient>
+
+if (!globalWithMongo._mongoClient) {
+  globalWithMongo._mongoClient = new MongoClient(mongoUri)
+  globalWithMongo._mongoClientPromise = globalWithMongo._mongoClient.connect()
 }
+
+clientPromise = globalWithMongo._mongoClientPromise!
+
+// Resolved synchronously after the first connect; safe because better-auth
+// calls into MongoDB lazily after the server is fully booted.
+const client = globalWithMongo._mongoClient
+const db = client.db(mongoDbName)
 
 export const auth = betterAuth({
   database: mongodbAdapter(db, {
