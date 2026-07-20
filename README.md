@@ -4,6 +4,10 @@ SkillSwap is a peer-to-peer skill exchange platform where users trade knowledge 
 
 ---
 
+🔗[Live Demo](https://skill-swap-learning.vercel.app)  |  🔗[Server Repository](https://github.com/nmjakaria/SkillSwap-server)
+
+---
+
 ## Table of Contents
 
 - [Key Features](#key-features)
