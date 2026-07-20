@@ -27,16 +27,18 @@ export function Navbar() {
   // Define navigation items based on login status
   const navItems = session
     ? [
-        { name: "Home", href: "/" },
-        { name: "Explore", href: "/explore" },
-        { name: "Add Skill", href: "/skills/add" },
-        { name: "My Skills", href: "/skills/manage" },
-        { name: "Profile", href: "/profile" },
-      ]
+      { name: "Home", href: "/" },
+      { name: "Explore", href: "/explore" },
+      { name: "About", href: "/about" },
+      { name: "Add Skill", href: "/skills/add" },
+      { name: "My Skills", href: "/skills/manage" },
+      { name: "Profile", href: "/profile" },
+    ]
     : [
-        { name: "Home", href: "/" },
-        { name: "Explore", href: "/explore" },
-      ]
+      { name: "Home", href: "/" },
+      { name: "Explore", href: "/explore" },
+      { name: "About", href: "/about" },
+    ]
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/90 backdrop-blur-md transition-all duration-300">

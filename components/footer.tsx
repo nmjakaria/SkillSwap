@@ -2,48 +2,68 @@ import Link from "next/link"
 import { Sparkles } from "lucide-react"
 
 export function Footer() {
-  const currentYear = new Date().getFullYear()
-
   return (
-    <footer className="w-full border-t border-border/40 bg-background/50 py-8 md:py-12 mt-auto">
+    <footer className="w-full border-t border-border/40 bg-neutral-bg py-12 mt-auto">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Logo & Tagline */}
-          <div className="flex flex-col items-center md:items-start gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12 lg:gap-16">
+          {/* Column 1: Logo & Tagline */}
+          <div className="flex flex-col items-start gap-4 col-span-1">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-teal text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal text-white shadow-sm">
                 <Sparkles className="h-4 w-4" />
               </div>
-              <span className="text-lg font-bold tracking-tight text-foreground">
+              <span className="text-xl font-bold tracking-tight text-foreground">
                 Skill<span className="text-coral">Swap</span>
               </span>
             </Link>
-            <p className="text-xs text-muted-foreground text-center md:text-left max-w-xs">
-              Empowering communities to learn, share, and swap expertise. Peer-to-peer knowledge sharing, simplified.
+            <p className="text-sm text-foreground/80 leading-relaxed font-medium">
+              Trade your skills. Learn anything for free.
             </p>
           </div>
 
-          {/* Links */}
-          <nav className="flex flex-wrap justify-center gap-x-8 gap-y-4">
-            <Link href="/explore" className="text-sm text-muted-foreground hover:text-teal transition-colors">
+          {/* Column 2: Explore */}
+          <div className="flex flex-col gap-3">
+            <h4 className="text-sm font-bold text-foreground uppercase tracking-wider mb-2">Explore</h4>
+            <Link href="/explore" className="text-sm text-foreground/70 hover:text-teal font-medium transition-colors">
               Explore Skills
             </Link>
-            <Link href="/about" className="text-sm text-muted-foreground hover:text-teal transition-colors">
-              About Us
+            <Link href="/skills/add" className="text-sm text-foreground/70 hover:text-teal font-medium transition-colors">
+              Add Skill
             </Link>
-            <Link href="/contact" className="text-sm text-muted-foreground hover:text-teal transition-colors">
+            <Link href="/explore" className="text-sm text-foreground/70 hover:text-teal font-medium transition-colors">
+              Categories
+            </Link>
+          </div>
+
+          {/* Column 3: Company */}
+          <div className="flex flex-col gap-3">
+            <h4 className="text-sm font-bold text-foreground uppercase tracking-wider mb-2">Company</h4>
+            <Link href="/about" className="text-sm text-foreground/70 hover:text-teal font-medium transition-colors">
+              About
+            </Link>
+            <Link href="/contact" className="text-sm text-foreground/70 hover:text-teal font-medium transition-colors">
               Contact
             </Link>
-          </nav>
+          </div>
+
+          {/* Column 4: Legal */}
+          <div className="flex flex-col gap-3">
+            <h4 className="text-sm font-bold text-foreground uppercase tracking-wider mb-2">Legal</h4>
+            {/* TODO: Add real Privacy Policy page */}
+            <Link href="#" className="text-sm text-foreground/70 hover:text-teal font-medium transition-colors">
+              Privacy Policy
+            </Link>
+            {/* TODO: Add real Terms of Service page */}
+            <Link href="#" className="text-sm text-foreground/70 hover:text-teal font-medium transition-colors">
+              Terms of Service
+            </Link>
+          </div>
         </div>
 
         {/* Bottom copyright */}
-        <div className="mt-8 pt-8 border-t border-border/20 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground text-center sm:text-left">
-            &copy; {currentYear} SkillSwap. All rights reserved.
-          </p>
-          <p className="text-xs text-muted-foreground text-center sm:text-right">
-            Built with Next.js, Tailwind and BetterAuth
+        <div className="mt-12 pt-8 border-t border-border/60 flex flex-col items-center justify-center">
+          <p className="text-sm text-foreground/60 font-medium">
+            &copy; 2026 SkillSwap. All rights reserved.
           </p>
         </div>
       </div>

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
 import { apiClient, Skill } from "@/lib/api-client"
@@ -86,7 +87,25 @@ const MOCK_SKILLS: Partial<Skill>[] = [
   },
 ]
 
+// Hero background images
+const HERO_IMAGES = [
+  "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80", // Collaboration/Learning
+  "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1920&q=80", // Tech/Design
+  "https://images.unsplash.com/photo-1556910103-1c02745a872f?auto=format&fit=crop&w=1920&q=80", // Cooking
+  "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1920&q=80", // Music
+  "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=1920&q=80", // Fitness
+]
+
 export default function LandingPage() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % HERO_IMAGES.length)
+    }, 6000)
+    return () => clearInterval(interval)
+  }, [])
+
   const { data, isLoading } = useQuery({
     queryKey: ["featuredSkills"],
     queryFn: () => apiClient<any>("/api/skills?sort=popular&page=1"),
@@ -100,31 +119,69 @@ export default function LandingPage() {
   return (
     <div className="flex-1 w-full bg-neutral-bg">
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 lg:py-32 bg-gradient-to-b from-teal/5 via-transparent to-transparent">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-4xl space-y-8">
-          <Badge className="px-3 py-1 bg-teal/10 text-teal hover:bg-teal/10 border-transparent rounded-full font-medium">
+      <section className="relative overflow-hidden py-24 lg:py-36 bg-black flex items-center justify-center min-h-[500px]">
+
+        {/* Background Images with Crossfade and Ken Burns */}
+        {HERO_IMAGES.map((src, idx) => {
+          const isActive = idx === currentImageIndex
+          return (
+            <div
+              key={src}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${isActive ? "opacity-100" : "opacity-0"
+                }`}
+            >
+              <img
+                src={src}
+                alt="SkillSwap learning"
+                className={`w-full h-full object-cover transition-transform duration-[15000ms] ease-linear ${isActive ? "scale-110" : "scale-100"
+                  }`}
+              />
+            </div>
+          )
+        })}
+
+        {/* Dark Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/70 to-black/60" />
+
+        {/* Hero Content */}
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-4xl space-y-8 text-white">
+          <Badge className="px-3 py-1 bg-white/10 text-white hover:bg-white/20 border-transparent rounded-full font-medium backdrop-blur-sm shadow-sm">
             Join the Peer-to-Peer Learning Revolution
           </Badge>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.15]">
+
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] text-white drop-shadow-md">
             Trade Your Skills. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal to-coral">
+            <span className="bg-clip-text text-[#2A9D8F]">
               Learn Anything for Free.
             </span>
           </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+
+          <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed drop-shadow-sm font-medium">
             SkillSwap is a community-driven platform where knowledge is the currency. Teach what you love, master what you want, completely free.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button asChild size="lg" className="w-full sm:w-auto bg-teal hover:bg-teal/90 text-white shadow-lg shadow-teal/10 cursor-pointer">
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <Button asChild size="lg" className="w-full sm:w-auto bg-teal hover:bg-teal/90 text-white shadow-lg shadow-teal/20 cursor-pointer border-0">
               <Link href="/explore">
                 Explore Skills
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border-border/80 hover:bg-muted cursor-pointer">
+            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border-white/30 text-white hover:bg-white/10 hover:text-white backdrop-blur-sm cursor-pointer shadow-lg bg-black/20">
               <Link href="/register">Create Account</Link>
             </Button>
           </div>
+        </div>
+
+        {/* Carousel Indicators */}
+        <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-10">
+          {HERO_IMAGES.map((_, idx) => (
+            <div
+              key={idx}
+              className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentImageIndex ? "w-8 bg-teal-400" : "w-2 bg-white/40"
+                }`}
+            />
+          ))}
         </div>
       </section>
 
