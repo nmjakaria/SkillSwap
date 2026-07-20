@@ -10,9 +10,26 @@ if (!mongoUri) {
 
 const mongoDbName = process.env.MONGODB_DB_NAME || "skillswap_bd"
 
-// Create MongoClient without expecting database name in the connection string path
-const client = new MongoClient(mongoUri)
-const db = client.db(mongoDbName)
+// Global caching for MongoClient to prevent connection exhaustion in serverless environments
+let client: MongoClient
+let db: any
+
+const globalWithMongo = global as typeof globalThis & {
+  _mongoClient?: MongoClient
+  _mongoDb?: any
+}
+
+if (process.env.NODE_ENV === "production") {
+  client = new MongoClient(mongoUri)
+  db = client.db(mongoDbName)
+} else {
+  if (!globalWithMongo._mongoClient) {
+    globalWithMongo._mongoClient = new MongoClient(mongoUri)
+    globalWithMongo._mongoDb = globalWithMongo._mongoClient.db(mongoDbName)
+  }
+  client = globalWithMongo._mongoClient
+  db = globalWithMongo._mongoDb
+}
 
 export const auth = betterAuth({
   database: mongodbAdapter(db, {
@@ -28,3 +45,4 @@ export const auth = betterAuth({
     jwt() // Enables JWT generation and JWKS endpoint
   ],
 })
+
