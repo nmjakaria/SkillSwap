@@ -1,65 +1,292 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import Link from "next/link"
+import { useQuery } from "@tanstack/react-query"
+import { apiClient, Skill } from "@/lib/api-client"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { SkillCard, SkillCardSkeleton } from "@/components/skill-card"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import {
+  Sparkles,
+  ArrowRight,
+  BookOpen,
+  Users,
+  Repeat,
+  Code,
+  Palette,
+  Globe,
+  Utensils,
+  Music,
+  Briefcase,
+  Dumbbell,
+  Layers,
+  Eye,
+  Calendar,
+} from "lucide-react"
+
+// Category list with corresponding icons
+const CATEGORIES = [
+  { name: "Programming", icon: Code, color: "text-teal bg-teal/10" },
+  { name: "Design", icon: Palette, color: "text-coral bg-coral/10" },
+  { name: "Languages", icon: Globe, color: "text-blue-500 bg-blue-500/10" },
+  { name: "Cooking", icon: Utensils, color: "text-warm-yellow bg-warm-yellow/10" },
+  { name: "Music", icon: Music, color: "text-purple-500 bg-purple-500/10" },
+  { name: "Business", icon: Briefcase, color: "text-indigo-500 bg-indigo-500/10" },
+  { name: "Fitness", icon: Dumbbell, color: "text-green-500 bg-green-500/10" },
+  { name: "Other", icon: Layers, color: "text-gray-500 bg-gray-500/10" },
+]
+
+// Mock skills as a fallback if the backend returns empty or is offline
+const MOCK_SKILLS: Partial<Skill>[] = [
+  {
+    _id: "mock-1",
+    title: "React & Next.js Development",
+    shortDescription: "Learn to build modern, high-performance web applications using React, Next.js App Router, and Tailwind CSS.",
+    category: "Programming",
+    level: "Advanced",
+    availability: "Weekends",
+    views: 142,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    _id: "mock-2",
+    title: "UI/UX & Brand Design",
+    shortDescription: "Master color theory, typography, Figma layouts, and creating premium design systems for web and mobile.",
+    category: "Design",
+    level: "Intermediate",
+    availability: "Flexible",
+    views: 98,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    _id: "mock-3",
+    title: "Conversational Spanish",
+    shortDescription: "Practice speaking Spanish with a native speaker. Focus on vocabulary, pronunciation, and everyday dialogue.",
+    category: "Languages",
+    level: "Beginner",
+    availability: "Weekdays evening",
+    views: 86,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    _id: "mock-4",
+    title: "Artisanal Bread Baking",
+    shortDescription: "Learn the secrets of sourdough fermentation, sourdough starters, proofing techniques, and baking the perfect crust.",
+    category: "Cooking",
+    level: "Intermediate",
+    availability: "Saturday mornings",
+    views: 74,
+    createdAt: new Date().toISOString(),
+  },
+]
+
+export default function LandingPage() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["featuredSkills"],
+    queryFn: () => apiClient<any>("/api/skills?sort=popular&page=1"),
+    retry: 1,
+  })
+
+  // Safely extract popular skills or fallback to mock data
+  const rawSkills = data?.items || (Array.isArray(data) ? data : [])
+  const displaySkills = rawSkills.length > 0 ? rawSkills.slice(0, 4) : MOCK_SKILLS
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="flex-1 w-full bg-neutral-bg">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden py-20 lg:py-32 bg-gradient-to-b from-teal/5 via-transparent to-transparent">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-4xl space-y-8">
+          <Badge className="px-3 py-1 bg-teal/10 text-teal hover:bg-teal/10 border-transparent rounded-full font-medium">
+            Join the Peer-to-Peer Learning Revolution
+          </Badge>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.15]">
+            Trade Your Skills. <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal to-coral">
+              Learn Anything for Free.
+            </span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            SkillSwap is a community-driven platform where knowledge is the currency. Teach what you love, master what you want, completely free.
           </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button asChild size="lg" className="w-full sm:w-auto bg-teal hover:bg-teal/90 text-white shadow-lg shadow-teal/10 cursor-pointer">
+              <Link href="/explore">
+                Explore Skills
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto border-border/80 hover:bg-muted cursor-pointer">
+              <Link href="/register">Create Account</Link>
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-16 sm:py-24 border-t border-border/20 bg-background/50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+          <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">How It Works</h2>
+            <p className="text-muted-foreground">
+              Swapping skills is simple, intuitive, and rewarding.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex flex-col items-center text-center p-6 space-y-4 rounded-xl border border-border/30 bg-background/50 shadow-sm">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal/10 text-teal">
+                <BookOpen className="h-6 w-6" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">1. List Your Skills</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Add skills you can teach. Describe your availability, experience level, and use our AI helper to generate details.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center p-6 space-y-4 rounded-xl border border-border/30 bg-background/50 shadow-sm">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-coral/10 text-coral">
+                <Users className="h-6 w-6" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">2. Find Swappers</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Browse skills offered by other members. Filter by category, difficulty level, or search terms to find what you want.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center p-6 space-y-4 rounded-xl border border-border/30 bg-background/50 shadow-sm">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-warm-yellow/10 text-warm-yellow">
+                <Repeat className="h-6 w-6" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">3. Swap Knowledge</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Get in touch, plan a digital or physical meeting, and start learning. Share your expertise in exchange for theirs.
+              </p>
+            </div>
+          </div>
         </div>
-      </main>
+      </section>
+
+      {/* Categories Section */}
+      <section className="py-16 sm:py-24 border-t border-border/20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+          <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">Browse Categories</h2>
+            <p className="text-muted-foreground">
+              Explore expertise across creative, technical, and general subjects.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {CATEGORIES.map((cat) => {
+              const Icon = cat.icon
+              return (
+                <Link
+                  key={cat.name}
+                  href={`/explore?category=${encodeURIComponent(cat.name)}`}
+                  className="group flex flex-col p-6 rounded-xl border border-border/40 bg-card hover:bg-card/50 hover:border-teal/40 transition-all duration-300 shadow-sm"
+                >
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${cat.color} group-hover:scale-105 transition-transform duration-300`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <span className="mt-4 font-semibold text-foreground group-hover:text-teal transition-colors">
+                    {cat.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground mt-1">
+                    Explore skills &rarr;
+                  </span>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Skills Section */}
+      <section className="py-16 sm:py-24 border-t border-border/20 bg-background/50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold tracking-tight text-foreground">Featured Skills</h2>
+              <p className="text-muted-foreground">
+                Discover the most popular skill exchanges in our community right now.
+              </p>
+            </div>
+            <Button asChild variant="outline" className="sm:self-end border-border/80 hover:bg-muted cursor-pointer">
+              <Link href="/explore">View All Skills</Link>
+            </Button>
+          </div>
+
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <SkillCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {displaySkills.map((skill: Partial<Skill>) => (
+                <SkillCard key={skill._id} skill={skill} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-16 sm:py-24 border-t border-border/20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+          <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">Frequently Asked Questions</h2>
+            <p className="text-muted-foreground">
+              Got questions? We have answers.
+            </p>
+          </div>
+
+          <Accordion type="single" collapsible className="w-full space-y-3">
+            <AccordionItem value="item-1" className="border border-border/40 rounded-xl px-4 bg-card shadow-sm">
+              <AccordionTrigger className="text-base font-semibold py-4 hover:no-underline text-foreground">
+                What is SkillSwap?
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                SkillSwap is a community platform where members trade skills directly. There is no money involved—instead, you share your expertise in one subject (like design or cooking) in return for learning a skill from someone else (like coding or languages).
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-2" className="border border-border/40 rounded-xl px-4 bg-card shadow-sm">
+              <AccordionTrigger className="text-base font-semibold py-4 hover:no-underline text-foreground">
+                How does the swap process work?
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                First, list the skills you are ready to teach. Then, browse skills offered by other members. When you find a skill you want to learn, visit their detail page to check availability. You can message them, set up an exchange, and meet online or in person.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-3" className="border border-border/40 rounded-xl px-4 bg-card shadow-sm">
+              <AccordionTrigger className="text-base font-semibold py-4 hover:no-underline text-foreground">
+                Is SkillSwap completely free?
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                Yes, SkillSwap is entirely free. The core principle is reciprocity—your time and knowledge are the currency used to learn from other members of the community.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-4" className="border border-border/40 rounded-xl px-4 bg-card shadow-sm">
+              <AccordionTrigger className="text-base font-semibold py-4 hover:no-underline text-foreground">
+                How does the AI assistant help me?
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                When adding a skill, you can click &quot;Generate Description&quot;. Our backend AI assistant will analyze your title, category, and short summary to generate a rich, comprehensive full description and list of tags. You can review, edit, and adjust it before saving.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      </section>
     </div>
-  );
+  )
 }
