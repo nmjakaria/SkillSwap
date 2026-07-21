@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { toast } from "sonner"
 import { Sparkles, Loader2, ArrowRight } from "lucide-react"
+import { FcGoogle } from "react-icons/fc";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -69,6 +70,17 @@ function LoginForm() {
     }
   }
 
+  const signInGoogle = async (): Promise<void> => {
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: redirectTo
+      });
+    } catch (err) {
+      console.error("Google sign in failed", err);
+    }
+  };
+
   return (
     <div className="flex flex-grow items-center justify-center px-4 py-12 sm:px-6 lg:px-8 bg-neutral-bg">
       <Card className="w-full max-w-md border-border/40 shadow-xl shadow-teal/5 bg-card/80 backdrop-blur-sm">
@@ -89,7 +101,7 @@ function LoginForm() {
                   {form.formState.errors.root.message}
                 </div>
               )}
-              
+
               <FormField
                 control={form.control}
                 name="email"
@@ -150,6 +162,16 @@ function LoginForm() {
             </form>
           </Form>
         </CardContent>
+        <div className="flex justify-center">
+          <Button
+            variant="outline"
+            className="rounded-xl border border-zinc-200 dark:border-zinc-800 font-bold text-zinc-900 dark:text-zinc-100 h-8 w-full gap-2 bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            onClick={signInGoogle}
+          >
+            <FcGoogle className="text-lg" />
+            Continue with Google
+          </Button>
+        </div>
         <CardFooter className="flex flex-col space-y-2 border-t border-border/20 pt-4 text-center text-sm">
           <p className="text-muted-foreground">
             Don&apos;t have an account?{" "}
