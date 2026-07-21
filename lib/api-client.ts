@@ -1,4 +1,5 @@
 import { authClient } from "@/lib/auth-client"
+import { getUserToken } from "./session"
 
 // Shared Types & Interfaces
 
@@ -65,7 +66,7 @@ interface RequestOptions extends RequestInit {
  * Automatically attaches Authorization header if a BetterAuth JWT token is available.
  */
 export async function apiClient<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-  const { params, headers, ...restOptions } = options
+  const { params,  ...restOptions } = options
 
   // 1. Build URL with query parameters if any
   let url = `${API_BASE_URL}${endpoint}`
@@ -83,31 +84,18 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
   }
 
   // 2. Build headers
-  const defaultHeaders: Record<string, string> = {
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
   }
-
-  let token: string | null = null
-
   // Retrieve JWT from BetterAuth client if running in the browser
-  if (typeof window !== "undefined") {
-    try {
-      const tokenRes = await authClient.token()
-      console.log(tokenRes);
-      if (tokenRes?.data?.token) {
-        token = tokenRes.data.token
-      }
-    } catch (error) {
-      console.error("Error retrieving BetterAuth token:", error)
-    }
-  }
+  const token = await getUserToken()
+  console.log("token from getUserToken():", token)
 
   if (token) {
-    defaultHeaders["Authorization"] = `Bearer ${token}`
+    headers.Authorization = `Bearer ${token}`
   }
 
   const mergedHeaders = {
-    ...defaultHeaders,
     ...headers,
   }
 
