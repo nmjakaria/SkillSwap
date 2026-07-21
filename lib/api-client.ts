@@ -93,6 +93,7 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
   if (typeof window !== "undefined") {
     try {
       const tokenRes = await authClient.token()
+      console.log(tokenRes);
       if (tokenRes?.data?.token) {
         token = tokenRes.data.token
       }

@@ -92,7 +92,7 @@ const MOCK_SKILLS: Partial<Skill>[] = [
 const HERO_IMAGES = [
   "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80", // Collaboration/Learning
   "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1920&q=80", // Tech/Design
-  "https://images.unsplash.com/photo-1556910103-1c02745a872f?auto=format&fit=crop&w=1920&q=80", // Cooking
+  "https://images.unsplash.com/photo-1625631976982-c6df1654a6ea?auto=format&fit=crop&w=1920&q=80", // Cooking
   "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1920&q=80", // Music
   "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=1920&q=80", // Fitness
 ]

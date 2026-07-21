@@ -1,25 +1,20 @@
+import dns from "node:dns"
+dns.setServers(["8.8.8.8", "8.8.4.4"])
+
 import { NextRequest, NextResponse } from "next/server"
+import { headers } from "next/headers"
+import { auth } from "@/lib/auth"
 
-export function proxy(request: NextRequest) {
-  const sessionCookie =
-    request.cookies.get("better-auth.session_token") ||
-    request.cookies.get("__secure-better-auth.session_token")
+export async function proxy(request: NextRequest) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
 
-  const { pathname } = request.nextUrl
-
-  const protectedRoutes = [
-    "/skills/add",
-    "/skills/manage",
-    "/profile",
-    "/recommendations",
-  ]
-
-  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route))
-
-  if (isProtectedRoute && !sessionCookie) {
-    const loginUrl = new URL("/login", request.url)
-    // Save the page they were trying to access to redirect them back after logging in
-    loginUrl.searchParams.set("redirect", pathname)
+  if (!session) {
+    const currentUrl = request.nextUrl.pathname + request.nextUrl.search
+    const loginUrl = new URL("/login", request.url) // change to "/auth/signin" if that's your real route
+    loginUrl.searchParams.set("redirect", currentUrl)
+    loginUrl.searchParams.set("message", "login_required")
     return NextResponse.redirect(loginUrl)
   }
 
@@ -28,13 +23,14 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    "/dashboard/:path*",
     "/skills/add",
-    "/skills/manage",
-    "/profile",
-    "/recommendations",
     "/skills/add/:path*",
+    "/skills/manage",
     "/skills/manage/:path*",
+    "/profile",
     "/profile/:path*",
+    "/recommendations",
     "/recommendations/:path*",
   ],
 }

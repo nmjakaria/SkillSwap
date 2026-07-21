@@ -1,7 +1,14 @@
 import { betterAuth } from "better-auth"
-import { mongodbAdapter } from "@better-auth/mongo-adapter"
+import { mongodbAdapter } from "better-auth/adapters/mongodb"
 import { MongoClient } from "mongodb"
 import { jwt } from "better-auth/plugins"
+
+// Vercel serverless functions occasionally fail to resolve MongoDB Atlas's
+// SRV DNS records with the default resolver. If you were seeing intermittent
+// "querySrv ENOTFOUND" or similar connection errors in production, this fixes it.
+// Remove this block if you were never actually hitting that error.
+import dns from "node:dns"
+dns.setServers(["8.8.8.8", "8.8.4.4"])
 
 const mongoUri = process.env.MONGODB_URI
 if (!mongoUri) {
@@ -17,25 +24,18 @@ const globalWithMongo = global as typeof globalThis & {
   _mongoClientPromise?: Promise<MongoClient>
 }
 
-let clientPromise: Promise<MongoClient>
-
 if (!globalWithMongo._mongoClient) {
   globalWithMongo._mongoClient = new MongoClient(mongoUri)
   globalWithMongo._mongoClientPromise = globalWithMongo._mongoClient.connect()
 }
 
-clientPromise = globalWithMongo._mongoClientPromise!
-
-// Resolved synchronously after the first connect; safe because better-auth
-// calls into MongoDB lazily after the server is fully booted.
+const clientPromise = globalWithMongo._mongoClientPromise!
 const client = globalWithMongo._mongoClient
 const db = client.db(mongoDbName)
 
 // Build the trusted origins list.
 // BETTER_AUTH_TRUSTED_ORIGINS is a comma-separated list of allowed origins,
 // e.g. "https://yourapp.vercel.app,https://custom-domain.com"
-// The baseURL origin is always implicitly trusted by Better Auth, but we
-// add it explicitly here alongside any extra production origins.
 const trustedOrigins = [
   process.env.BETTER_AUTH_URL || "http://localhost:3000",
   ...(process.env.BETTER_AUTH_TRUSTED_ORIGINS
@@ -44,10 +44,7 @@ const trustedOrigins = [
 ]
 
 export const auth = betterAuth({
-  database: mongodbAdapter(db, {
-    client,
-    dbName: mongoDbName,
-  } as any),
+  database: mongodbAdapter(db, { client }),
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
   trustedOrigins,
@@ -55,7 +52,10 @@ export const auth = betterAuth({
     enabled: true,
   },
   plugins: [
-    jwt() // Enables JWT generation and JWKS endpoint
+    jwt(), // Enables JWT generation and JWKS endpoint
   ],
 })
 
+// Exported for cases where you need to await a fully-connected client elsewhere
+// (e.g. scripts or other modules), since `client` above may still be connecting.
+export { clientPromise }
