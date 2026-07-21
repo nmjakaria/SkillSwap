@@ -51,6 +51,13 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  session: {
+    cookieCache: {
+      enabled: true,
+      strategy: "jwt",
+      maxAge: 5 * 24 * 60 * 60, // 5 Days
+    },
+  },
   plugins: [
     jwt(), // Enables JWT generation and JWKS endpoint
   ],
