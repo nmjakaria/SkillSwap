@@ -6,7 +6,7 @@ import { Users, Target, Zap, Heart } from "lucide-react"
 export default function AboutPage() {
   return (
     <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 space-y-16 flex-grow">
-      
+
       {/* Hero Section */}
       <section className="space-y-6 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground">
@@ -37,18 +37,19 @@ export default function AboutPage() {
           {/* Decorative background gradients */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-teal/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-coral/10 rounded-full blur-3xl" />
-          
+
+
           <div className="bg-background rounded-xl p-4 shadow-sm border border-border/30 space-y-2 z-10">
             <Users className="h-5 w-5 text-teal" />
             <h3 className="font-semibold text-foreground">Community First</h3>
             <p className="text-xs text-muted-foreground">Built around real human connections.</p>
           </div>
-          <div className="bg-background rounded-xl p-4 shadow-sm border border-border/30 space-y-2 z-10 mt-6">
+          <div className="bg-background rounded-xl p-4 shadow-sm border border-border/30 space-y-2 z-10">
             <Zap className="h-5 w-5 text-coral" />
             <h3 className="font-semibold text-foreground">Active Learning</h3>
             <p className="text-xs text-muted-foreground">Learn by doing, side-by-side.</p>
           </div>
-          <div className="bg-background rounded-xl p-4 shadow-sm border border-border/30 space-y-2 z-10 -mt-6">
+          <div className="bg-background rounded-xl p-4 shadow-sm border border-border/30 space-y-2 z-10">
             <Heart className="h-5 w-5 text-red-500" />
             <h3 className="font-semibold text-foreground">Passionate</h3>
             <p className="text-xs text-muted-foreground">Driven by curiosity and growth.</p>
@@ -71,7 +72,7 @@ export default function AboutPage() {
             We are a small, passionate team of developers, designers, and lifelong learners who experienced firsthand the frustration of wanting to learn new skills without breaking the bank. SkillSwap was born from our own desire to trade coding knowledge for language lessons. Today, we're dedicated to expanding this model to the world.
           </p>
         </div>
-        
+
         <div className="bg-teal/5 border border-teal/10 rounded-2xl p-8 space-y-4 mt-8">
           <h3 className="text-xl font-semibold text-foreground">Join the Movement</h3>
           <p className="text-muted-foreground text-sm">
